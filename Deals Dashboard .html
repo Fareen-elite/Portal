@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Review &amp; Refund Tracking Portal</title>
+<style>
+:root{
+  --bg:#f4f6fb;
+  --panel:#ffffff;
+  --panel-2:#f8f9fc;
+  --border:#e6e9f1;
+  --text:#1c2433;
+  --muted:#6b7280;
+  --accent:#4f46e5;
+  --accent-2:#6366f1;
+  --green:#16a34a;
+  --green-bg:#dcfce7;
+  --red:#dc2626;
+  --red-bg:#fee2e2;
+  --amber:#d97706;
+  --amber-bg:#fef3c7;
+  --blue:#2563eb;
+  --blue-bg:#dbeafe;
+  --dark:#111827;
+  --radius:14px;
+  --shadow:0 1px 3px rgba(16,24,40,.06),0 1px 2px rgba(16,24,40,.04);
+  --shadow-md:0 4px 16px rgba(16,24,40,.08);
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Inter','Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);}
+
+/* ===== TOP NAV ===== */
+header.topbar{background:var(--dark);color:#fff;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:60;box-shadow:var(--shadow-md);}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;}
+.brand .name{font-weight:700;font-size:15px;}
+.brand .sub{font-size:11px;color:#9ca3af;margin-top:1px;}
+
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;padding:14px 28px;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:68px;z-index:55;box-shadow:var(--shadow);}
+nav.tabs button{background:transparent;border:1px solid transparent;color:var(--muted);padding:9px 16px;border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:600;transition:.15s;}
+nav.tabs button:hover{background:var(--panel-2);color:var(--text);}
+nav.tabs button.active{background:var(--accent);color:#fff;}
+
+main{padding:28px;max-width:1440px;margin:0 auto;}
+section{display:none;}
+section.active{display:block;animation:fade .2s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:20px;box-shadow:var(--shadow);}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.card-head h2{margin:0;font-size:17px;font-weight:700;}
+.card-head .desc{font-size:12.5px;color:var(--muted);margin-top:3px;}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
+.toolbar input[type="text"]{flex:1;min-width:240px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:13.5px;outline:none;transition:.15s;}
+.toolbar input[type="text"]:focus{border-color:var(--accent);background:#fff;}
+.toolbar button{background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:.15s;}
+.toolbar button:hover{border-color:var(--accent);color:var(--accent);}
+.toolbar button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.toolbar button.primary:hover{background:var(--accent-2);color:#fff;}
+
+.status-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px;}
+
+.table-wrap{overflow:auto;max-height:60vh;border:1px solid var(--border);border-radius:12px;}
+table{border-collapse:collapse;width:100%;font-size:13.5px;}
+thead th{position:sticky;top:0;background:var(--panel-2);text-align:left;padding:12px 14px;border-bottom:1px solid var(--border);white-space:nowrap;z-index:2;font-weight:700;color:#374151;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px;}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--border);white-space:nowrap;}
+tbody tr:hover{background:var(--panel-2);}
+tbody tr:last-child td{border-bottom:none;}
+
+.badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;}
+.badge.paid{background:var(--green-bg);color:var(--green);}
+.badge.pending{background:var(--amber-bg);color:var(--amber);}
+.badge.verified{background:var(--blue-bg);color:var(--blue);}
+.badge.match{background:var(--green-bg);color:var(--green);}
+.badge.mismatch{background:var(--red-bg);color:var(--red);}
+
+a.link-cell{color:var(--accent);font-weight:600;text-decoration:none;}
+a.link-cell:hover{text-decoration:underline;}
+
+.loading,.error,.empty{padding:36px;text-align:center;color:var(--muted);font-size:13.5px;}
+.error{color:var(--red);}
+
+/* ===== FORMS SECTION ===== */
+.dark-block{background:var(--dark);border-radius:var(--radius);padding:24px;margin-bottom:20px;}
+.dark-block h2{color:#fff;margin:0 0 4px;font-size:17px;}
+.dark-block .desc{color:#9ca3af;font-size:12.5px;margin-bottom:18px;}
+.forms-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+.form-link{display:flex;align-items:center;gap:12px;background:#1f2937;border:1px solid #374151;border-radius:12px;padding:16px;text-decoration:none;color:#fff;transition:.15s;}
+.form-link:hover{border-color:var(--accent-2);transform:translateY(-2px);background:#252f3f;}
+.form-link .icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
+.form-link .platform{font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;}
+.form-link .title{font-size:14.5px;font-weight:700;margin-top:2px;}
+
+.guideline-actions{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.guideline-note{color:var(--muted);font-size:12.5px;margin-bottom:14px;}
+iframe{border-radius:14px;}
+
+footer{text-align:center;color:var(--muted);font-size:12.5px;padding:30px 0;}
+
+@media(max-width:640px){
+  header.topbar{position:static;}
+  nav.tabs{position:static;}
+  main{padding:16px;}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">LR</div>
+    <div>
+      <div class="name">Live Review &amp; Refund Tracking Portal</div>
+      <div class="sub">Real-time data from Google Sheets</div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button data-tab="slots" class="active">Slot</button>
+  <button data-tab="orders">Order Form</button>
+  <button data-tab="refunds">Refund Form</button>
+  <button data-tab="forms">Submit Forms</button>
+  <button data-tab="guidelines">Guidelines</button>
+</nav>
+
+<main>
+
+<!-- ================= SLOT ================= -->
+<section id="slots" class="active">
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <h2>Slot Tracking</h2>
+        <div class="desc">Date, Slot, Product Code, Link</div>
+      </div>
+    </div>
+    <div class="status-row">
+      <span><span class="dot" id="slots-dot"></span><span id="slots-status">Loading...</span></span>
+      <span id="slots-updated">Last updated: —</span>
+    </div>
+    <div class="toolbar">
+      <input type="text" id="slots-search" placeholder="Search by Slot, Product Code...">
+      <button onclick="loadSlots()">Refresh</button>
+    </div>
+    <div class="table-wrap" id="slots-table-wrap">
+      <div class="loading">Loading slot data...</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ORDERS ================= -->
+<section id="orders">
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <h2>Order Form</h2>
+        <div class="desc">Timestamp, Name, Order id, Delivery Date, Product ID, Days Delivered</div>
+      </div>
+    </div>
+    <div class="status-row">
+      <span><span class="dot" id="orders-dot"></span><span id="orders-status">Loading...</span></span>
+      <span id="orders-updated">Last updated: —</span>
+    </div>
+    <div class="toolbar">
+      <input type="text" id="orders-search" placeholder="Search by Order ID, Product ID...">
+      <button onclick="loadOrders()">Refresh</button>
+    </div>
+    <div class="table-wrap" id="orders-table-wrap">
+      <div class="loading">Loading order data...</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= REFUNDS ================= -->
+<section id="refunds">
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <h2>Refund Form</h2>
+        <div class="desc">Timestamp, Order ID, Order Code, Payment Date, Payment, Price Match, Checked List</div>
+      </div>
+    </div>
+    <div class="status-row">
+      <span><span class="dot" id="refunds-dot"></span><span id="refunds-status">Loading...</span></span>
+      <span id="refunds-updated">Last updated: —</span>
+    </div>
+    <div class="toolbar">
+      <input type="text" id="refunds-search" placeholder="Search by Order ID, Order Code...">
+      <button onclick="loadRefunds()">Refresh</button>
+    </div>
+    <div class="table-wrap" id="refunds-table-wrap">
+      <div class="loading">Loading refund data...</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SUBMIT FORMS ================= -->
+<section id="forms">
+  <div class="dark-block">
+    <h2>Amazon Forms</h2>
+    <div class="desc">Submit a new Amazon order or refund</div>
+    <div class="forms-grid">
+      <a class="form-link" href="https://forms.gle/iNXFwuCo7AEk3gfW8" target="_blank">
+        <div class="icon">A</div>
+        <div><div class="platform">Amazon</div><div class="title">Order Form</div></div>
+      </a>
+      <a class="form-link" href="https://forms.gle/Ky7yMB2CdwEwnV5i8" target="_blank">
+        <div class="icon">A</div>
+        <div><div class="platform">Amazon</div><div class="title">Refund Form</div></div>
+      </a>
+    </div>
+  </div>
+  <div class="dark-block">
+    <h2>Blinkit Forms</h2>
+    <div class="desc">Submit a new Blinkit order or refund</div>
+    <div class="forms-grid">
+      <a class="form-link" href="https://forms.gle/wxuXLmAvec9PxHBr9" target="_blank">
+        <div class="icon">B</div>
+        <div><div class="platform">Blinkit</div><div class="title">Order Form</div></div>
+      </a>
+      <a class="form-link" href="https://forms.gle/WC5hKLVxb7PsaxKZ8" target="_blank">
+        <div class="icon">B</div>
+        <div><div class="platform">Blinkit</div><div class="title">Refund Form</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GUIDELINES ================= -->
+<section id="guidelines">
+  <div class="card">
+    <div class="guideline-actions">
+      <button class="primary" onclick="refreshGuidelines()">Refresh Guidelines</button>
+      <button onclick="window.open('https://docs.google.com/document/d/e/2PACX-1vSjicG79cRogAeBaWWJF96Fv0U5ag5UVwHrIaKwkK7sy1yu1wVnXDQJMOV0D6L7r5QpNaC1wA9IyEcd/pub','_blank')">Open Guidelines in New Tab</button>
+    </div>
+    <div class="guideline-note">Guidelines are live and managed from Google Docs</div>
+    <iframe id="guideline-frame"
+      src="https://docs.google.com/document/d/e/2PACX-1vSjicG79cRogAeBaWWJF96Fv0U5ag5UVwHrIaKwkK7sy1yu1wVnXDQJMOV0D6L7r5QpNaC1wA9IyEcd/pub?embedded=true"
+      width="100%" height="750" style="border:0;background:white;">
+    </iframe>
+  </div>
+</section>
+
+</main>
+
+<footer>Live Review &amp; Refund Tracking Portal</footer>
+
+<script>
+// ===================== EASY-EDIT COLUMN / SOURCE MAPPING =====================
+// Each sheet's gid is "0" assuming the data is on the first tab of that sheet.
+// If not, open the relevant tab in Google Sheets and copy gid=NUMBER from the URL.
+const SLOT_SHEET_ID    = "1UgHLQOXuX6n5wLu4-KL9Su2icQF1zOBOEEyiJt5PcrY";
+const ORDER_SHEET_ID   = "1pMW7EgU1Hfg46gSYiItMTQAmBzI4Px7QB8beHH7t_Pg";
+const REFUND_SHEET_ID  = "1N2zBXgNIT3pOfuE7WXviyxbzBEOtmMJGPHWcUc1pEOY";
+
+const SLOT_GID = "0";
+const ORDER_GID = "0";
+const REFUND_GID = "0";
+
+const SLOT_TABLE_CSV_URL  = "https://docs.google.com/spreadsheets/d/" + SLOT_SHEET_ID   + "/export?format=csv&gid=" + SLOT_GID;
+const ORDER_FORM_CSV_URL  = "https://docs.google.com/spreadsheets/d/" + ORDER_SHEET_ID  + "/export?format=csv&gid=" + ORDER_GID;
+const REFUND_FORM_CSV_URL = "https://docs.google.com/spreadsheets/d/" + REFUND_SHEET_ID + "/export?format=csv&gid=" + REFUND_GID;
+
+const SLOT_COLS   = ["Date","Slot","Product Code","Link"];
+const ORDER_COLS  = ["Timestamp","Name","Order id","Delivery Date","Product ID","Days Delivered"];
+const REFUND_COLS = ["Timestamp","ORDER ID","Order Code","Payment Date","Payment","Order and refund Price same or not","Checked List"];
+
+let DATA = { slots: [], orders: [], refunds: [] };
+
+// ---------- CSV PARSER (handles quoted commas/newlines) ----------
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for(let i=0;i<text.length;i++){
+    const c = text[i], n = text[i+1];
+    if(inQuotes){
+      if(c === '"' && n === '"'){ field+='"'; i++; }
+      else if(c === '"'){ inQuotes=false; }
+      else { field+=c; }
+    } else {
+      if(c === '"'){ inQuotes=true; }
+      else if(c === ','){ row.push(field); field=''; }
+      else if(c === '\r'){ /* skip */ }
+      else if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else { field+=c; }
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  if(!rows.length) return [];
+  const headers = rows[0].map(h=>h.trim());
+  return rows.slice(1).filter(r=>r.some(c=>c && c.trim()!=='')).map(r=>{
+    const obj = {};
+    headers.forEach((h,idx)=> obj[h] = (r[idx] !== undefined ? r[idx] : '').trim());
+    return obj;
+  });
+}
+
+function cacheBust(url){
+  return url + (url.includes('?') ? '&' : '?') + "_t=" + Date.now();
+}
+
+async function fetchCSV(url){
+  const res = await fetch(cacheBust(url), {cache:"no-store"});
+  if(!res.ok) throw new Error("HTTP " + res.status + " — check the sheet is shared as 'Anyone with the link: Viewer'");
+  const text = await res.text();
+  return parseCSV(text);
+}
+
+function setStatus(key, ok, msg){
+  document.getElementById(key+'-dot').style.background = ok ? 'var(--green)' : 'var(--red)';
+  document.getElementById(key+'-status').textContent = msg;
+  document.getElementById(key+'-updated').textContent = "Last updated: " + new Date().toLocaleTimeString();
+}
+
+function getCol(row, name){
+  return row && row[name] !== undefined ? row[name] : '';
+}
+
+// ---------- BADGE HELPERS ----------
+function paymentBadge(val){
+  const v = (val||'').toLowerCase();
+  if(!v) return '<span class="badge pending">Pending</span>';
+  if(/(done|paid|yes)/.test(v)) return '<span class="badge paid">Paid</span>';
+  return '<span class="badge pending">Pending</span>';
+}
+function checkedBadge(val){
+  const v = (val||'').toLowerCase();
+  if(/(verified|done|yes)/.test(v)) return '<span class="badge verified">Verified</span>';
+  return v ? v : '—';
+}
+function matchBadge(val){
+  const v = (val||'').toLowerCase();
+  if(/(match|yes|same)/.test(v) && !/(mismatch|no|different)/.test(v)) return '<span class="badge match">Match</span>';
+  if(/(mismatch|no|different)/.test(v)) return '<span class="badge mismatch">Mismatch</span>';
+  return v ? v : '—';
+}
+
+// ---------- SLOTS ----------
+async function loadSlots(){
+  const wrap = document.getElementById('slots-table-wrap');
+  try{
+    DATA.slots = await fetchCSV(SLOT_TABLE_CSV_URL);
+    setStatus('slots', true, 'Live — ' + DATA.slots.length + ' records');
+    renderSlots();
+  }catch(e){
+    setStatus('slots', false, 'Error loading data');
+    wrap.innerHTML = '<div class="error">Failed to load slot data: '+e.message+'</div>';
+  }
+}
+function renderSlots(){
+  const wrap = document.getElementById('slots-table-wrap');
+  const q = (document.getElementById('slots-search').value || '').toLowerCase();
+  const rows = DATA.slots.filter(r=>{
+    if(!q) return true;
+    return (getCol(r,'Slot').toLowerCase().includes(q) ||
+            getCol(r,'Product Code').toLowerCase().includes(q));
+  });
+  if(!rows.length){ wrap.innerHTML = '<div class="empty">No matching records.</div>'; return; }
+  let html = '<table><thead><tr>' + SLOT_COLS.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+  rows.forEach(r=>{
+    html += '<tr>';
+    SLOT_COLS.forEach(c=>{
+      if(c === 'Link'){
+        const link = getCol(r,c);
+        html += '<td>' + (link ? '<a class="link-cell" href="'+link+'" target="_blank">Open ↗</a>' : '—') + '</td>';
+      } else {
+        html += '<td>'+(getCol(r,c)||'')+'</td>';
+      }
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+// ---------- ORDERS ----------
+async function loadOrders(){
+  const wrap = document.getElementById('orders-table-wrap');
+  try{
+    DATA.orders = await fetchCSV(ORDER_FORM_CSV_URL);
+    setStatus('orders', true, 'Live — ' + DATA.orders.length + ' records');
+    renderOrders();
+  }catch(e){
+    setStatus('orders', false, 'Error loading data');
+    wrap.innerHTML = '<div class="error">Failed to load order data: '+e.message+'</div>';
+  }
+}
+function renderOrders(){
+  const wrap = document.getElementById('orders-table-wrap');
+  const q = (document.getElementById('orders-search').value || '').toLowerCase();
+  const rows = DATA.orders.filter(r=>{
+    if(!q) return true;
+    return (getCol(r,'Order id').toLowerCase().includes(q) ||
+            getCol(r,'Product ID').toLowerCase().includes(q));
+  });
+  if(!rows.length){ wrap.innerHTML = '<div class="empty">No matching records.</div>'; return; }
+  let html = '<table><thead><tr>' + ORDER_COLS.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+  rows.forEach(r=>{
+    html += '<tr>' + ORDER_COLS.map(c=>'<td>'+(getCol(r,c)||'')+'</td>').join('') + '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+// ---------- REFUNDS ----------
+async function loadRefunds(){
+  const wrap = document.getElementById('refunds-table-wrap');
+  try{
+    DATA.refunds = await fetchCSV(REFUND_FORM_CSV_URL);
+    setStatus('refunds', true, 'Live — ' + DATA.refunds.length + ' records');
+    renderRefunds();
+  }catch(e){
+    setStatus('refunds', false, 'Error loading data');
+    wrap.innerHTML = '<div class="error">Failed to load refund data: '+e.message+'</div>';
+  }
+}
+function renderRefunds(){
+  const wrap = document.getElementById('refunds-table-wrap');
+  const q = (document.getElementById('refunds-search').value || '').toLowerCase();
+  const rows = DATA.refunds.filter(r=>{
+    if(!q) return true;
+    return (getCol(r,'ORDER ID').toLowerCase().includes(q) ||
+            getCol(r,'Order Code').toLowerCase().includes(q));
+  });
+  if(!rows.length){ wrap.innerHTML = '<div class="empty">No matching records.</div>'; return; }
+  let html = '<table><thead><tr>' + REFUND_COLS.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+  rows.forEach(r=>{
+    html += '<tr>';
+    REFUND_COLS.forEach(c=>{
+      let cell;
+      if(c === 'Payment') cell = paymentBadge(getCol(r,c));
+      else if(c === 'Checked List') cell = checkedBadge(getCol(r,c));
+      else if(c === 'Order and refund Price same or not') cell = matchBadge(getCol(r,c));
+      else cell = getCol(r,c) || '';
+      html += '<td>'+cell+'</td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+// ---------- GUIDELINES ----------
+function refreshGuidelines(){
+  const frame = document.getElementById('guideline-frame');
+  const src = frame.src.split('#')[0];
+  frame.src = src + '#' + Date.now();
+}
+
+// ---------- TABS ----------
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ---------- SEARCH LISTENERS ----------
+document.getElementById('slots-search').addEventListener('input', renderSlots);
+document.getElementById('orders-search').addEventListener('input', renderOrders);
+document.getElementById('refunds-search').addEventListener('input', renderRefunds);
+
+// ---------- INIT ----------
+function loadAll(){
+  loadSlots();
+  loadOrders();
+  loadRefunds();
+}
+loadAll();
+setInterval(loadAll, 60000);
+</script>
+
+</body>
+</html>
