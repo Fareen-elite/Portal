@@ -3,478 +3,707 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live Review &amp; Refund Tracking Portal</title>
+<title>ValueKart</title>
 <style>
+/* ===== DESIGN TOKENS ===== */
 :root{
-  --bg:#f4f6fb;
+  --bg:#f0f2f8;
   --panel:#ffffff;
   --panel-2:#f8f9fc;
-  --border:#e6e9f1;
-  --text:#1c2433;
+  --border:#e4e7f0;
+  --text:#111827;
   --muted:#6b7280;
   --accent:#4f46e5;
-  --accent-2:#6366f1;
-  --green:#16a34a;
-  --green-bg:#dcfce7;
-  --red:#dc2626;
-  --red-bg:#fee2e2;
-  --amber:#d97706;
-  --amber-bg:#fef3c7;
-  --blue:#2563eb;
-  --blue-bg:#dbeafe;
-  --dark:#111827;
-  --radius:14px;
-  --shadow:0 1px 3px rgba(16,24,40,.06),0 1px 2px rgba(16,24,40,.04);
-  --shadow-md:0 4px 16px rgba(16,24,40,.08);
+  --accent-h:#4338ca;
+  --green:#16a34a; --green-bg:#dcfce7;
+  --red:#dc2626;   --red-bg:#fee2e2;
+  --amber:#d97706; --amber-bg:#fef3c7;
+  --blue:#2563eb;  --blue-bg:#dbeafe;
+  --dark:#0f172a;
+  --dark-2:#1e293b;
+  --dark-3:#334155;
+  --r:14px;
+  --sh:0 1px 3px rgba(16,24,40,.06),0 1px 2px rgba(16,24,40,.04);
+  --sh-md:0 4px 20px rgba(16,24,40,.10);
 }
-*{box-sizing:border-box;}
-body{margin:0;font-family:'Inter','Segoe UI',Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);}
+.quick-links{display:flex;gap:10px;flex-wrap:wrap;padding:14px 16px;max-width:1440px;margin:0 auto;}
+.ql-btn{flex:1;min-width:180px;text-align:center;padding:12px 14px;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;transition:.15s;}
+.ql-btn.amz{background:#eef0fe;color:#4f46e5;border:1.5px solid #c7cbfb;}
+.ql-btn.amz:hover{background:#4f46e5;color:#fff;}
+.ql-btn.bli{background:#fff7ed;color:#ea580c;border:1.5px solid #fed7aa;}
+.ql-btn.bli:hover{background:#ea580c;color:#fff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
 
-/* ===== TOP NAV ===== */
-header.topbar{background:var(--dark);color:#fff;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:60;box-shadow:var(--shadow-md);}
-.brand{display:flex;align-items:center;gap:10px;}
-.brand .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;}
-.brand .name{font-weight:700;font-size:15px;}
-.brand .sub{font-size:11px;color:#9ca3af;margin-top:1px;}
+/* ===== TOPBAR ===== */
+.topbar{background:var(--dark);color:#fff;padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:70;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#818cf8);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
+.brand-name{font-weight:700;font-size:15px;line-height:1.3;}
+.brand-sub{font-size:11px;color:#94a3b8;}
+.topbar-badge{background:var(--dark-2);border:1px solid var(--dark-3);padding:4px 12px;border-radius:20px;font-size:11.5px;color:#94a3b8;}
 
-nav.tabs{display:flex;gap:6px;flex-wrap:wrap;padding:14px 28px;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:68px;z-index:55;box-shadow:var(--shadow);}
-nav.tabs button{background:transparent;border:1px solid transparent;color:var(--muted);padding:9px 16px;border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:600;transition:.15s;}
-nav.tabs button:hover{background:var(--panel-2);color:var(--text);}
-nav.tabs button.active{background:var(--accent);color:#fff;}
+/* ===== NAV TABS ===== */
+.nav-wrap{background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:62px;z-index:60;box-shadow:var(--sh);}
+.nav-inner{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;}
+/* Group blocks */
+.nav-group-block{display:flex;flex-direction:column;gap:5px;flex:1;min-width:120px;}
+.group-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;padding:1px 2px;}
+.group-label.amz{color:#4f46e5;}
+.group-label.bli{color:#ea580c;}
+/* All nav buttons */
+.nav-btn{border:1.5px solid var(--border);color:var(--muted);padding:8px 10px;border-radius:9px;cursor:pointer;font-size:12.5px;font-weight:600;white-space:nowrap;transition:.15s;background:var(--panel-2);text-align:center;}
+/* Amazon group */
+.nav-group-block.amazon .nav-btn:hover{border-color:#4f46e5;color:#4f46e5;background:#eef0fe;}
+.nav-group-block.amazon .nav-btn.active{background:#4f46e5;color:#fff;border-color:#4f46e5;}
+/* Blinkit group */
+.nav-group-block.blinkit .nav-btn:hover{border-color:#ea580c;color:#ea580c;background:#fff7ed;}
+.nav-group-block.blinkit .nav-btn.active{background:#ea580c;color:#fff;border-color:#ea580c;}
+/* Others group */
+.nav-group-block.others .nav-btn:hover{border-color:#374151;color:#374151;background:#f1f5f9;}
+.nav-group-block.others .nav-btn.active{background:#0f172a;color:#fff;border-color:#0f172a;}
 
+/* ===== MAIN ===== */
 main{padding:28px;max-width:1440px;margin:0 auto;}
 section{display:none;}
-section.active{display:block;animation:fade .2s ease;}
-@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+section.active{display:block;animation:fadein .18s ease;}
+@keyframes fadein{from{opacity:0;transform:translateY(5px);}to{opacity:1;}}
 
-.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:20px;box-shadow:var(--shadow);}
-.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
-.card-head h2{margin:0;font-size:17px;font-weight:700;}
-.card-head .desc{font-size:12.5px;color:var(--muted);margin-top:3px;}
+/* ===== CARDS ===== */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:20px;box-shadow:var(--sh);}
+.card-head{margin-bottom:18px;}
+.card-head h2{font-size:17px;font-weight:700;margin-bottom:4px;}
+.card-head p{font-size:12.5px;color:var(--muted);}
 
+/* ===== STATUS ROW ===== */
+.status-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:5px;vertical-align:middle;}
+
+/* ===== TOOLBAR ===== */
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px;}
-.toolbar input[type="text"]{flex:1;min-width:240px;background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:13.5px;outline:none;transition:.15s;}
-.toolbar input[type="text"]:focus{border-color:var(--accent);background:#fff;}
-.toolbar button{background:var(--panel-2);border:1px solid var(--border);color:var(--text);padding:10px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:.15s;}
-.toolbar button:hover{border-color:var(--accent);color:var(--accent);}
-.toolbar button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
-.toolbar button.primary:hover{background:var(--accent-2);color:#fff;}
+.toolbar input[type=text]{flex:1;min-width:240px;background:var(--panel-2);border:1.5px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:13.5px;outline:none;transition:.15s;}
+.toolbar input[type=text]:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(79,70,229,.1);}
+.toolbar select{background:var(--panel-2);border:1.5px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:13.5px;cursor:pointer;outline:none;}
+.btn{background:var(--panel-2);border:1.5px solid var(--border);color:var(--text);padding:10px 16px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:.15s;}
+.btn:hover{border-color:var(--accent);color:var(--accent);}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn.primary:hover{background:var(--accent-h);}
 
-.status-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);margin-bottom:14px;flex-wrap:wrap;gap:8px;}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px;}
-
-.table-wrap{overflow:auto;max-height:60vh;border:1px solid var(--border);border-radius:12px;}
+/* ===== TABLE ===== */
+.table-wrap{overflow:auto;max-height:62vh;border:1px solid var(--border);border-radius:12px;}
 table{border-collapse:collapse;width:100%;font-size:13.5px;}
-thead th{position:sticky;top:0;background:var(--panel-2);text-align:left;padding:12px 14px;border-bottom:1px solid var(--border);white-space:nowrap;z-index:2;font-weight:700;color:#374151;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px;}
+thead th{position:sticky;top:0;background:#f1f5fb;text-align:left;padding:11px 14px;border-bottom:1.5px solid var(--border);white-space:nowrap;z-index:2;font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:#374151;}
 tbody td{padding:11px 14px;border-bottom:1px solid var(--border);white-space:nowrap;}
-tbody tr:hover{background:var(--panel-2);}
 tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:#f8f9fd;}
 
-.badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:700;}
+/* ===== BADGES ===== */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:700;}
 .badge.paid{background:var(--green-bg);color:var(--green);}
 .badge.pending{background:var(--amber-bg);color:var(--amber);}
 .badge.verified{background:var(--blue-bg);color:var(--blue);}
 .badge.match{background:var(--green-bg);color:var(--green);}
 .badge.mismatch{background:var(--red-bg);color:var(--red);}
+.badge.active{background:var(--green-bg);color:var(--green);}
+.badge.inactive{background:var(--red-bg);color:var(--red);}
 
-a.link-cell{color:var(--accent);font-weight:600;text-decoration:none;}
-a.link-cell:hover{text-decoration:underline;}
+a.lnk{color:var(--accent);font-weight:600;text-decoration:none;}
+a.lnk:hover{text-decoration:underline;}
 
-.loading,.error,.empty{padding:36px;text-align:center;color:var(--muted);font-size:13.5px;}
+.loading,.error,.empty{padding:40px;text-align:center;color:var(--muted);font-size:13.5px;}
 .error{color:var(--red);}
 
-/* ===== FORMS SECTION ===== */
-.dark-block{background:var(--dark);border-radius:var(--radius);padding:24px;margin-bottom:20px;}
-.dark-block h2{color:#fff;margin:0 0 4px;font-size:17px;}
-.dark-block .desc{color:#9ca3af;font-size:12.5px;margin-bottom:18px;}
+/* ===== DARK BLOCK (forms) ===== */
+.dark-block{background:var(--dark);border-radius:var(--r);padding:24px;margin-bottom:20px;}
+.dark-block h3{color:#fff;font-size:16px;margin-bottom:4px;}
+.dark-block .desc{color:#94a3b8;font-size:12.5px;margin-bottom:18px;}
 .forms-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
-.form-link{display:flex;align-items:center;gap:12px;background:#1f2937;border:1px solid #374151;border-radius:12px;padding:16px;text-decoration:none;color:#fff;transition:.15s;}
-.form-link:hover{border-color:var(--accent-2);transform:translateY(-2px);background:#252f3f;}
-.form-link .icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;}
-.form-link .platform{font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.5px;}
-.form-link .title{font-size:14.5px;font-weight:700;margin-top:2px;}
+.form-card{display:flex;align-items:center;gap:12px;background:var(--dark-2);border:1px solid var(--dark-3);border-radius:12px;padding:16px;text-decoration:none;color:#fff;transition:.15s;}
+.form-card:hover{border-color:#818cf8;transform:translateY(-2px);}
+.form-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#818cf8);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
+.form-platform{font-size:10.5px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;}
+.form-title{font-size:14.5px;font-weight:700;margin-top:2px;}
 
-.guideline-actions{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+/* ===== GUIDELINES ===== */
+.guideline-actions{display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
 .guideline-note{color:var(--muted);font-size:12.5px;margin-bottom:14px;}
-iframe{border-radius:14px;}
 
-footer{text-align:center;color:var(--muted);font-size:12.5px;padding:30px 0;}
+/* ===== YOUTUBE CARDS ===== */
+.yt-header{margin-bottom:20px;}
+.yt-header h2{font-size:20px;font-weight:800;margin-bottom:4px;}
+.yt-header p{color:var(--muted);font-size:13.5px;}
+.yt-filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.yt-filters input[type=text]{flex:1;min-width:220px;background:var(--panel);border:1.5px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:13.5px;outline:none;}
+.yt-filters input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.1);}
+.yt-filters select{background:var(--panel);border:1.5px solid var(--border);color:var(--text);padding:10px 14px;border-radius:10px;font-size:13.5px;cursor:pointer;outline:none;}
+.yt-status{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.yt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+@media(max-width:1024px){.yt-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.yt-grid{grid-template-columns:1fr;}}
+.yt-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--sh);transition:.15s;}
+.yt-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px);}
+.yt-embed{width:100%;aspect-ratio:16/9;border:none;background:#000;}
+.yt-info{padding:14px 16px 16px;}
+.yt-title{font-weight:700;font-size:14px;margin-bottom:6px;line-height:1.4;}
+.yt-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.yt-cat{background:var(--blue-bg);color:var(--blue);font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.yt-date{font-size:11.5px;color:var(--muted);}
+.yt-open{display:block;width:100%;padding:9px;background:var(--red-bg);color:var(--red);border:none;border-radius:9px;cursor:pointer;font-weight:700;font-size:13px;text-align:center;text-decoration:none;transition:.15s;}
+.yt-open:hover{background:var(--red);color:#fff;}
+.yt-invalid{background:#f8f9fc;border:1px dashed var(--border);border-radius:10px;padding:20px;text-align:center;color:var(--muted);font-size:13px;}
+
+/* ===== FOOTER ===== */
+footer{text-align:center;padding:28px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--border);margin-top:8px;}
+footer a{color:var(--accent);font-weight:600;text-decoration:none;}
+footer a:hover{text-decoration:underline;}
 
 @media(max-width:640px){
-  header.topbar{position:static;}
-  nav.tabs{position:static;}
+  .topbar{padding:0 16px;height:56px;}
   main{padding:16px;}
+  .card{padding:16px;}
 }
 </style>
 </head>
 <body>
 
+<!-- ===== TOPBAR ===== -->
 <header class="topbar">
   <div class="brand">
-    <div class="logo">LR</div>
+    <div class="brand-logo">VK</div>
     <div>
-      <div class="name">Live Review &amp; Refund Tracking Portal</div>
-      <div class="sub">Real-time data from Google Sheets</div>
+      <div class="brand-name">ValueKart</div>
+      <div class="brand-sub">Real-time data</div>
     </div>
   </div>
+  <div class="topbar-badge" id="global-refresh">Auto-refresh: 60s</div>
 </header>
 
-<nav class="tabs">
-  <button data-tab="slots" class="active">Slot</button>
-  <button data-tab="orders">Order Form</button>
-  <button data-tab="refunds">Refund Form</button>
-  <button data-tab="forms">Submit Forms</button>
-  <button data-tab="guidelines">Guidelines</button>
-</nav>
+<!-- ===== NAV ===== -->
+<div class="nav-wrap">
+  <div class="nav-inner">
+    <div class="nav-group-block amazon">
+      <span class="group-label amz">Amazon</span>
+      <button class="nav-btn active" data-tab="a-slot">Slot</button>
+      <button class="nav-btn" data-tab="a-orders">Order Table</button>
+      <button class="nav-btn" data-tab="a-refunds">Refund Table</button>
+    </div>
+    <div class="nav-group-block blinkit">
+      <span class="group-label bli">Blinkit</span>
+      <button class="nav-btn" data-tab="b-slot">Slot</button>
+      <button class="nav-btn" data-tab="b-orders">Order Table</button>
+      <button class="nav-btn" data-tab="b-refunds">Refund Table</button>
+    </div>
+    <div class="nav-group-block others">
+      <span class="group-label" style="color:var(--muted);">More</span>
+      <button class="nav-btn" data-tab="youtube">📺 Videos</button>
+      <button class="nav-btn" data-tab="guidelines">Guidelines</button>
+    </div>
+  </div>
+</div>
 
 <main>
-
-<!-- ================= SLOT ================= -->
-<section id="slots" class="active">
+<div class="quick-links">
+  <a class="ql-btn amz" href="https://forms.gle/iNXFwuCo7AEk3gfW8" target="_blank">📦 Amazon Order Form</a>
+  <a class="ql-btn amz" href="https://forms.gle/Ky7yMB2CdwEwnV5i8" target="_blank">↩️ Amazon Refund Form</a>
+  <a class="ql-btn bli" href="https://forms.gle/wxuXLmAvec9PxHBr9" target="_blank">📦 Blinkit Order Form</a>
+  <a class="ql-btn bli" href="https://forms.gle/WC5hKLVxb7PsaxKZ8" target="_blank">↩️ Blinkit Refund Form</a>
+</div>
+<!-- ============================== AMAZON SLOT ============================== -->
+<section id="a-slot" class="active">
   <div class="card">
     <div class="card-head">
-      <div>
-        <h2>Slot Tracking</h2>
-        <div class="desc">Date, Slot, Product Code, Link</div>
-      </div>
+      <h2>Amazon — Slot Tracking</h2>
+      <p>When Slot Show Zero Don't Place Order</p>
     </div>
     <div class="status-row">
-      <span><span class="dot" id="slots-dot"></span><span id="slots-status">Loading...</span></span>
-      <span id="slots-updated">Last updated: —</span>
+      <span><span class="dot" id="aslot-dot"></span><span id="aslot-status">Loading...</span></span>
+      <span id="aslot-updated">Last updated: —</span>
     </div>
     <div class="toolbar">
-      <input type="text" id="slots-search" placeholder="Search by Slot, Product Code...">
-      <button onclick="loadSlots()">Refresh</button>
+      <input type="text" id="aslot-search" placeholder="Search by Slot, Product Code...">
+      <button class="btn" onclick="loadASlot()">↻ Refresh</button>
     </div>
-    <div class="table-wrap" id="slots-table-wrap">
-      <div class="loading">Loading slot data...</div>
-    </div>
+    <div class="table-wrap" id="aslot-wrap"><div class="loading">Loading...</div></div>
   </div>
 </section>
 
-<!-- ================= ORDERS ================= -->
-<section id="orders">
+<!-- ============================== AMAZON ORDER FORM ============================== -->
+<section id="a-orders">
   <div class="card">
     <div class="card-head">
-      <div>
-        <h2>Order Form</h2>
-        <div class="desc">Timestamp, Name, Order id, Delivery Date, Product ID, Days Delivered</div>
-      </div>
+      <h2>Amazon — Order Form</h2>
+      <p>Check Your Order Form Here</p>
     </div>
     <div class="status-row">
-      <span><span class="dot" id="orders-dot"></span><span id="orders-status">Loading...</span></span>
-      <span id="orders-updated">Last updated: —</span>
+      <span><span class="dot" id="aord-dot"></span><span id="aord-status">Loading...</span></span>
+      <span id="aord-updated">Last updated: —</span>
     </div>
     <div class="toolbar">
-      <input type="text" id="orders-search" placeholder="Search by Order ID, Product ID...">
-      <button onclick="loadOrders()">Refresh</button>
+      <input type="text" id="aord-search" placeholder="Search by Order ID, Product ID...">
+      <button class="btn" onclick="loadAOrders()">↻ Refresh</button>
     </div>
-    <div class="table-wrap" id="orders-table-wrap">
-      <div class="loading">Loading order data...</div>
-    </div>
+    <div class="table-wrap" id="aord-wrap"><div class="loading">Loading...</div></div>
   </div>
 </section>
 
-<!-- ================= REFUNDS ================= -->
-<section id="refunds">
+<!-- ============================== AMAZON REFUND FORM ============================== -->
+<section id="a-refunds">
   <div class="card">
     <div class="card-head">
-      <div>
-        <h2>Refund Form</h2>
-        <div class="desc">Timestamp, Order ID, Order Code, Payment Date, Payment, Price Match, Checked List</div>
-      </div>
+      <h2>Amazon — Refund Form</h2>
+      <p>Check Your Payment Here</p>
     </div>
     <div class="status-row">
-      <span><span class="dot" id="refunds-dot"></span><span id="refunds-status">Loading...</span></span>
-      <span id="refunds-updated">Last updated: —</span>
+      <span><span class="dot" id="aref-dot"></span><span id="aref-status">Loading...</span></span>
+      <span id="aref-updated">Last updated: —</span>
     </div>
     <div class="toolbar">
-      <input type="text" id="refunds-search" placeholder="Search by Order ID, Order Code...">
-      <button onclick="loadRefunds()">Refresh</button>
+      <input type="text" id="aref-search" placeholder="Search by ORDER ID, Order Code...">
+      <button class="btn" onclick="loadARefunds()">↻ Refresh</button>
     </div>
-    <div class="table-wrap" id="refunds-table-wrap">
-      <div class="loading">Loading refund data...</div>
-    </div>
+    <div class="table-wrap" id="aref-wrap"><div class="loading">Loading...</div></div>
   </div>
 </section>
 
-<!-- ================= SUBMIT FORMS ================= -->
-<section id="forms">
-  <div class="dark-block">
-    <h2>Amazon Forms</h2>
-    <div class="desc">Submit a new Amazon order or refund</div>
-    <div class="forms-grid">
-      <a class="form-link" href="https://forms.gle/iNXFwuCo7AEk3gfW8" target="_blank">
-        <div class="icon">A</div>
-        <div><div class="platform">Amazon</div><div class="title">Order Form</div></div>
-      </a>
-      <a class="form-link" href="https://forms.gle/Ky7yMB2CdwEwnV5i8" target="_blank">
-        <div class="icon">A</div>
-        <div><div class="platform">Amazon</div><div class="title">Refund Form</div></div>
-      </a>
+<!-- ============================== BLINKIT SLOT ============================== -->
+<section id="b-slot">
+  <div class="card">
+    <div class="card-head">
+      <h2>Blinkit — Slot Tracking</h2>
+      <p>When Slot Show Zero Don't Place Order</p>
     </div>
-  </div>
-  <div class="dark-block">
-    <h2>Blinkit Forms</h2>
-    <div class="desc">Submit a new Blinkit order or refund</div>
-    <div class="forms-grid">
-      <a class="form-link" href="https://forms.gle/wxuXLmAvec9PxHBr9" target="_blank">
-        <div class="icon">B</div>
-        <div><div class="platform">Blinkit</div><div class="title">Order Form</div></div>
-      </a>
-      <a class="form-link" href="https://forms.gle/WC5hKLVxb7PsaxKZ8" target="_blank">
-        <div class="icon">B</div>
-        <div><div class="platform">Blinkit</div><div class="title">Refund Form</div></div>
-      </a>
+    <div class="status-row">
+      <span><span class="dot" id="bslot-dot"></span><span id="bslot-status">Loading...</span></span>
+      <span id="bslot-updated">Last updated: —</span>
     </div>
+    <div class="toolbar">
+      <input type="text" id="bslot-search" placeholder="Search by Slot, Product Code...">
+      <button class="btn" onclick="loadBSlot()">↻ Refresh</button>
+    </div>
+    <div class="table-wrap" id="bslot-wrap"><div class="loading">Loading...</div></div>
   </div>
 </section>
 
-<!-- ================= GUIDELINES ================= -->
+<!-- ============================== BLINKIT ORDER FORM ============================== -->
+<section id="b-orders">
+  <div class="card">
+    <div class="card-head">
+      <h2>Blinkit — Order Form</h2>
+      <p>Check Your Order Form Here</p>
+    </div>
+    <div class="status-row">
+      <span><span class="dot" id="bord-dot"></span><span id="bord-status">Loading...</span></span>
+      <span id="bord-updated">Last updated: —</span>
+    </div>
+    <div class="toolbar">
+      <input type="text" id="bord-search" placeholder="Search by Order ID, Product Code...">
+      <button class="btn" onclick="loadBOrders()">↻ Refresh</button>
+    </div>
+    <div class="table-wrap" id="bord-wrap"><div class="loading">Loading...</div></div>
+  </div>
+</section>
+
+<!-- ============================== BLINKIT REFUND FORM ============================== -->
+<section id="b-refunds">
+  <div class="card">
+    <div class="card-head">
+      <h2>Blinkit — Refund Form</h2>
+      <p>Check Your Payment Here</p>
+    </div>
+    <div class="status-row">
+      <span><span class="dot" id="bref-dot"></span><span id="bref-status">Loading...</span></span>
+      <span id="bref-updated">Last updated: —</span>
+    </div>
+    <div class="toolbar">
+      <input type="text" id="bref-search" placeholder="Search by Order ID, Product Code...">
+      <button class="btn" onclick="loadBRefunds()">↻ Refresh</button>
+    </div>
+    <div class="table-wrap" id="bref-wrap"><div class="loading">Loading...</div></div>
+  </div>
+</section>
+
+<!-- ============================== YOUTUBE VIDEOS ============================== -->
+<section id="youtube">
+  <div class="card">
+    <div class="yt-header">
+      <h2>Training &amp; Guideline Videos</h2>
+      <p>Latest video instructions updated live from Google Sheet</p>
+    </div>
+    <div class="status-row">
+      <span><span class="dot" id="yt-dot"></span><span id="yt-status">Loading...</span></span>
+      <span id="yt-updated">Last updated: —</span>
+    </div>
+    <div class="yt-filters">
+      <input type="text" id="yt-search" placeholder="Search by video title...">
+      <select id="yt-cat"><option value="">All Categories</option></select>
+      <button class="btn" onclick="loadYoutube()">↻ Refresh</button>
+    </div>
+    <div class="yt-status" id="yt-count"></div>
+    <div id="yt-grid"><div class="loading">Loading videos...</div></div>
+  </div>
+</section>
+
+<!-- ============================== GUIDELINES ============================== -->
 <section id="guidelines">
   <div class="card">
     <div class="guideline-actions">
-      <button class="primary" onclick="refreshGuidelines()">Refresh Guidelines</button>
-      <button onclick="window.open('https://docs.google.com/document/d/e/2PACX-1vSjicG79cRogAeBaWWJF96Fv0U5ag5UVwHrIaKwkK7sy1yu1wVnXDQJMOV0D6L7r5QpNaC1wA9IyEcd/pub','_blank')">Open Guidelines in New Tab</button>
+      <button class="btn primary" onclick="refreshGuidelines()">↻ Refresh Guidelines</button>
+      <button class="btn" onclick="window.open('https://docs.google.com/document/d/e/2PACX-1vSjicG79cRogAeBaWWJF96Fv0U5ag5UVwHrIaKwkK7sy1yu1wVnXDQJMOV0D6L7r5QpNaC1wA9IyEcd/pub','_blank')">Open in New Tab ↗</button>
     </div>
     <div class="guideline-note">Guidelines are live and managed from Google Docs</div>
     <iframe id="guideline-frame"
       src="https://docs.google.com/document/d/e/2PACX-1vSjicG79cRogAeBaWWJF96Fv0U5ag5UVwHrIaKwkK7sy1yu1wVnXDQJMOV0D6L7r5QpNaC1wA9IyEcd/pub?embedded=true"
-      width="100%" height="750" style="border:0;background:white;">
+      width="100%" height="750" style="border:0;background:white;border-radius:14px;">
     </iframe>
   </div>
 </section>
 
 </main>
 
-<footer>Live Review &amp; Refund Tracking Portal</footer>
+<footer>
+  Live Review &amp; Refund Tracking Portal &nbsp;|&nbsp;
+  <a href="https://docs.google.com/document/d/e/2PACX-1vSjicG79cRogAeBaWWJF96Fv0U5ag5UVwHrIaKwkK7sy1yu1wVnXDQJMOV0D6L7r5QpNaC1wA9IyEcd/pub" target="_blank">Read Guideline</a>
+</footer>
 
 <script>
-// ===================== EASY-EDIT COLUMN / SOURCE MAPPING =====================
-// Each sheet's gid is "0" assuming the data is on the first tab of that sheet.
-// If not, open the relevant tab in Google Sheets and copy gid=NUMBER from the URL.
-const SLOT_SHEET_ID    = "1UgHLQOXuX6n5wLu4-KL9Su2icQF1zOBOEEyiJt5PcrY";
-const ORDER_SHEET_ID   = "1pMW7EgU1Hfg46gSYiItMTQAmBzI4Px7QB8beHH7t_Pg";
-const REFUND_SHEET_ID  = "1N2zBXgNIT3pOfuE7WXviyxbzBEOtmMJGPHWcUc1pEOY";
+// =============================================================
+//  EASY-EDIT SECTION — change only these values if sheets change
+// =============================================================
+const ASLOT_ID   = "1UgHLQOXuX6n5wLu4-KL9Su2icQF1zOBOEEyiJt5PcrY"; const ASLOT_GID   = "0";
+const AORD_ID    = "1pMW7EgU1Hfg46gSYiItMTQAmBzI4Px7QB8beHH7t_Pg";  const AORD_GID    = "0";
+const AREF_ID    = "1N2zBXgNIT3pOfuE7WXviyxbzBEOtmMJGPHWcUc1pEOY";  const AREF_GID    = "0";
+const BORD_ID    = "1Ckn-UZt66vqYN-dM_Gg4jqFqQHxP6EXsap5tGvRoQlI"; const BORD_GID    = "0";
+const BREF_ID    = "1zVuEThP1SaNWvZU3a7ZfbWJPm1mXRX99JzhW5LiCfyw";  const BREF_GID    = "0";
+const BSLOT_ID   = "1LLCIx-mj_cPjaz0k64I8RAj5b0e_FffHWi9rJ2RLkAA"; const BSLOT_GID   = "0";
+// YouTube tab: open that sheet's "YouTube" tab, copy gid= from URL, paste below
+const YT_ID      = "1aN3B_4AJbi0jI7A6Jksema2QJbQkNkyS7sNCsJCCbeA";  const YT_GID      = "0";
 
-const SLOT_GID = "0";
-const ORDER_GID = "0";
-const REFUND_GID = "0";
+function csvUrl(id, gid){ return "https://docs.google.com/spreadsheets/d/"+id+"/export?format=csv&gid="+gid; }
 
-const SLOT_TABLE_CSV_URL  = "https://docs.google.com/spreadsheets/d/" + SLOT_SHEET_ID   + "/export?format=csv&gid=" + SLOT_GID;
-const ORDER_FORM_CSV_URL  = "https://docs.google.com/spreadsheets/d/" + ORDER_SHEET_ID  + "/export?format=csv&gid=" + ORDER_GID;
-const REFUND_FORM_CSV_URL = "https://docs.google.com/spreadsheets/d/" + REFUND_SHEET_ID + "/export?format=csv&gid=" + REFUND_GID;
+const ASLOT_CSV   = csvUrl(ASLOT_ID,  ASLOT_GID);
+const AORD_CSV    = csvUrl(AORD_ID,   AORD_GID);
+const AREF_CSV    = csvUrl(AREF_ID,   AREF_GID);
+const BORD_CSV    = csvUrl(BORD_ID,   BORD_GID);
+const BREF_CSV    = csvUrl(BREF_ID,   BREF_GID);
+const BSLOT_CSV   = csvUrl(BSLOT_ID,  BSLOT_GID);
+const YOUTUBE_CSV_URL = csvUrl(YT_ID, YT_GID);
 
-const SLOT_COLS   = ["Date","Slot","Product Code","Link"];
-const ORDER_COLS  = ["Timestamp","Name","Order id","Delivery Date","Product ID","Days Delivered"];
-const REFUND_COLS = ["Timestamp","ORDER ID","Order Code","Payment Date","Payment","Order and refund Price same or not","Checked List"];
+// Column maps — edit these to change visible columns
+const ASLOT_COLS  = ["Slot","Product Code","Review Slot","Rating Slot","Link"];
+const AORD_COLS   = ["Timestamp","Name","Order id","Delivery Date","Product ID","Days Delivered"];
+const AREF_COLS   = ["Timestamp","Name","ORDER ID","Order Code","Payment Date","Payment","Return Window","Order and refund Price same or not","Checked List"];
+const BORD_COLS   = ["Timestamp","Name","Order ID","Delivery Date","Product Code","Location"];
+const BREF_COLS   = ["Timestamp","Name","Order ID","Delivery Date","Product Code","Payment date","Return Window","payment status"];
+const BSLOT_COLS  = ["Slot","Product Code","LOC","Review Slot","Rating Slot","Link"];
 
-let DATA = { slots: [], orders: [], refunds: [] };
+// =============================================================
+// DATA STORE
+// =============================================================
+const DATA = { aslot:[], aord:[], aref:[], bord:[], bref:[], bslot:[], yt:[] };
 
-// ---------- CSV PARSER (handles quoted commas/newlines) ----------
+// =============================================================
+// CSV PARSER
+// =============================================================
 function parseCSV(text){
-  const rows = [];
-  let row = [], field = '', inQuotes = false;
+  const rows=[];
+  let row=[],field='',inQ=false;
   for(let i=0;i<text.length;i++){
-    const c = text[i], n = text[i+1];
-    if(inQuotes){
-      if(c === '"' && n === '"'){ field+='"'; i++; }
-      else if(c === '"'){ inQuotes=false; }
-      else { field+=c; }
-    } else {
-      if(c === '"'){ inQuotes=true; }
-      else if(c === ','){ row.push(field); field=''; }
-      else if(c === '\r'){ /* skip */ }
-      else if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; }
-      else { field+=c; }
+    const c=text[i],n=text[i+1];
+    if(inQ){
+      if(c==='"'&&n==='"'){field+='"';i++;}
+      else if(c==='"'){inQ=false;}
+      else{field+=c;}
+    }else{
+      if(c==='"'){inQ=true;}
+      else if(c===','){row.push(field);field='';}
+      else if(c==='\r'){/*skip*/}
+      else if(c==='\n'){row.push(field);rows.push(row);row=[];field='';}
+      else{field+=c;}
     }
   }
-  if(field.length || row.length){ row.push(field); rows.push(row); }
-  if(!rows.length) return [];
-  const headers = rows[0].map(h=>h.trim());
-  return rows.slice(1).filter(r=>r.some(c=>c && c.trim()!=='')).map(r=>{
-    const obj = {};
-    headers.forEach((h,idx)=> obj[h] = (r[idx] !== undefined ? r[idx] : '').trim());
+  if(field.length||row.length){row.push(field);rows.push(row);}
+  if(!rows.length)return[];
+  const headers=rows[0].map(h=>h.trim());
+  return rows.slice(1).filter(r=>r.some(c=>c&&c.trim()!=='')).map(r=>{
+    const obj={};
+    headers.forEach((h,i)=>obj[h]=(r[i]!==undefined?r[i]:'').trim());
     return obj;
   });
 }
 
-function cacheBust(url){
-  return url + (url.includes('?') ? '&' : '?') + "_t=" + Date.now();
-}
+function bust(url){return url+(url.includes('?')?'&':'?')+'_t='+Date.now();}
 
 async function fetchCSV(url){
-  const res = await fetch(cacheBust(url), {cache:"no-store"});
-  if(!res.ok) throw new Error("HTTP " + res.status + " — check the sheet is shared as 'Anyone with the link: Viewer'");
-  const text = await res.text();
-  return parseCSV(text);
+  const res=await fetch(bust(url),{cache:'no-store'});
+  if(!res.ok)throw new Error('HTTP '+res.status+' — ensure the sheet is shared: Anyone with link → Viewer');
+  return parseCSV(await res.text());
 }
 
-function setStatus(key, ok, msg){
-  document.getElementById(key+'-dot').style.background = ok ? 'var(--green)' : 'var(--red)';
-  document.getElementById(key+'-status').textContent = msg;
-  document.getElementById(key+'-updated').textContent = "Last updated: " + new Date().toLocaleTimeString();
+function g(row,col){return row&&row[col]!==undefined?row[col]:'';}
+
+function setStatus(dotId,statusId,updId,ok,msg){
+  document.getElementById(dotId).style.background=ok?'var(--green)':'var(--red)';
+  document.getElementById(statusId).textContent=msg;
+  document.getElementById(updId).textContent='Last updated: '+new Date().toLocaleTimeString();
 }
 
-function getCol(row, name){
-  return row && row[name] !== undefined ? row[name] : '';
+// =============================================================
+// BADGE HELPERS
+// =============================================================
+function payBadge(v){
+  const s=(v||'').toLowerCase();
+  if(!s)return'<span class="badge pending">Pending</span>';
+  if(/(done|paid|yes|complete)/.test(s))return'<span class="badge paid">Paid</span>';
+  return'<span class="badge pending">Pending</span>';
+}
+function checkedBadge(v){
+  const s=(v||'').toLowerCase();
+  if(/(verified|done|yes)/.test(s))return'<span class="badge verified">Verified</span>';
+  return v||'—';
+}
+function matchBadge(v){
+  const s=(v||'').toLowerCase();
+  if(/(mismatch|no|different)/.test(s))return'<span class="badge mismatch">Mismatch</span>';
+  if(/(match|yes|same)/.test(s))return'<span class="badge match">Match</span>';
+  return v||'—';
 }
 
-// ---------- BADGE HELPERS ----------
-function paymentBadge(val){
-  const v = (val||'').toLowerCase();
-  if(!v) return '<span class="badge pending">Pending</span>';
-  if(/(done|paid|yes)/.test(v)) return '<span class="badge paid">Paid</span>';
-  return '<span class="badge pending">Pending</span>';
-}
-function checkedBadge(val){
-  const v = (val||'').toLowerCase();
-  if(/(verified|done|yes)/.test(v)) return '<span class="badge verified">Verified</span>';
-  return v ? v : '—';
-}
-function matchBadge(val){
-  const v = (val||'').toLowerCase();
-  if(/(match|yes|same)/.test(v) && !/(mismatch|no|different)/.test(v)) return '<span class="badge match">Match</span>';
-  if(/(mismatch|no|different)/.test(v)) return '<span class="badge mismatch">Mismatch</span>';
-  return v ? v : '—';
-}
-
-// ---------- SLOTS ----------
-async function loadSlots(){
-  const wrap = document.getElementById('slots-table-wrap');
-  try{
-    DATA.slots = await fetchCSV(SLOT_TABLE_CSV_URL);
-    setStatus('slots', true, 'Live — ' + DATA.slots.length + ' records');
-    renderSlots();
-  }catch(e){
-    setStatus('slots', false, 'Error loading data');
-    wrap.innerHTML = '<div class="error">Failed to load slot data: '+e.message+'</div>';
-  }
-}
-function renderSlots(){
-  const wrap = document.getElementById('slots-table-wrap');
-  const q = (document.getElementById('slots-search').value || '').toLowerCase();
-  const rows = DATA.slots.filter(r=>{
-    if(!q) return true;
-    return (getCol(r,'Slot').toLowerCase().includes(q) ||
-            getCol(r,'Product Code').toLowerCase().includes(q));
-  });
-  if(!rows.length){ wrap.innerHTML = '<div class="empty">No matching records.</div>'; return; }
-  let html = '<table><thead><tr>' + SLOT_COLS.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+// =============================================================
+// GENERIC TABLE RENDERER
+// =============================================================
+function renderTable(wrapId, rows, cols, linkCols, paymentCols, checkedCols, matchCols){
+  const wrap=document.getElementById(wrapId);
+  if(!rows.length){wrap.innerHTML='<div class="empty">No matching records.</div>';return;}
+  let html='<table><thead><tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>';
   rows.forEach(r=>{
-    html += '<tr>';
-    SLOT_COLS.forEach(c=>{
-      if(c === 'Link'){
-        const link = getCol(r,c);
-        html += '<td>' + (link ? '<a class="link-cell" href="'+link+'" target="_blank">Open ↗</a>' : '—') + '</td>';
-      } else {
-        html += '<td>'+(getCol(r,c)||'')+'</td>';
+    html+='<tr>';
+    cols.forEach(c=>{
+      const v=g(r,c);
+      if(linkCols&&linkCols.includes(c)){
+        html+='<td>'+(v?'<a class="lnk" href="'+v+'" target="_blank">Open ↗</a>':'—')+'</td>';
+      }else if(paymentCols&&paymentCols.includes(c)){
+        html+='<td>'+payBadge(v)+'</td>';
+      }else if(checkedCols&&checkedCols.includes(c)){
+        html+='<td>'+checkedBadge(v)+'</td>';
+      }else if(matchCols&&matchCols.includes(c)){
+        html+='<td>'+matchBadge(v)+'</td>';
+      }else{
+        html+='<td>'+(v||'')+'</td>';
       }
     });
-    html += '</tr>';
+    html+='</tr>';
   });
-  html += '</tbody></table>';
-  wrap.innerHTML = html;
+  html+='</tbody></table>';
+  wrap.innerHTML=html;
 }
 
-// ---------- ORDERS ----------
-async function loadOrders(){
-  const wrap = document.getElementById('orders-table-wrap');
+// =============================================================
+// LOADERS
+// =============================================================
+async function loadASlot(){
+  const w='aslot-wrap';
   try{
-    DATA.orders = await fetchCSV(ORDER_FORM_CSV_URL);
-    setStatus('orders', true, 'Live — ' + DATA.orders.length + ' records');
-    renderOrders();
+    DATA.aslot=await fetchCSV(ASLOT_CSV);
+    setStatus('aslot-dot','aslot-status','aslot-updated',true,'Live — '+DATA.aslot.length+' records');
+    renderASlot();
+  }catch(e){setStatus('aslot-dot','aslot-status','aslot-updated',false,'Error');document.getElementById(w).innerHTML='<div class="error">'+e.message+'</div>';}
+}
+function renderASlot(){
+  const q=(document.getElementById('aslot-search').value||'').toLowerCase();
+  const rows=DATA.aslot.filter(r=>!q||(g(r,'Slot').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)));
+  renderTable('aslot-wrap',rows,ASLOT_COLS,['Link'],null,null,null);
+}
+
+async function loadAOrders(){
+  const w='aord-wrap';
+  try{
+    DATA.aord=await fetchCSV(AORD_CSV);
+    setStatus('aord-dot','aord-status','aord-updated',true,'Live — '+DATA.aord.length+' records');
+    renderAOrders();
+  }catch(e){setStatus('aord-dot','aord-status','aord-updated',false,'Error');document.getElementById(w).innerHTML='<div class="error">'+e.message+'</div>';}
+}
+function renderAOrders(){
+  const q=(document.getElementById('aord-search').value||'').toLowerCase();
+  const rows=DATA.aord.filter(r=>!q||(g(r,'Order id').toLowerCase().includes(q)||g(r,'Product ID').toLowerCase().includes(q)));
+  renderTable('aord-wrap',rows,AORD_COLS,null,null,null,null);
+}
+
+async function loadARefunds(){
+  const w='aref-wrap';
+  try{
+    DATA.aref=await fetchCSV(AREF_CSV);
+    setStatus('aref-dot','aref-status','aref-updated',true,'Live — '+DATA.aref.length+' records');
+    renderARefunds();
+  }catch(e){setStatus('aref-dot','aref-status','aref-updated',false,'Error');document.getElementById(w).innerHTML='<div class="error">'+e.message+'</div>';}
+}
+function renderARefunds(){
+  const q=(document.getElementById('aref-search').value||'').toLowerCase();
+  const rows=DATA.aref.filter(r=>!q||(g(r,'ORDER ID').toLowerCase().includes(q)||g(r,'Order Code').toLowerCase().includes(q)));
+  renderTable('aref-wrap',rows,AREF_COLS,null,['Payment'],['Checked List'],['Order and refund Price same or not']);
+}
+
+async function loadBSlot(){
+  const w='bslot-wrap';
+  try{
+    DATA.bslot=await fetchCSV(BSLOT_CSV);
+    setStatus('bslot-dot','bslot-status','bslot-updated',true,'Live — '+DATA.bslot.length+' records');
+    renderBSlot();
+  }catch(e){setStatus('bslot-dot','bslot-status','bslot-updated',false,'Error');document.getElementById(w).innerHTML='<div class="error">'+e.message+'</div>';}
+}
+function renderBSlot(){
+  const q=(document.getElementById('bslot-search').value||'').toLowerCase();
+  const rows=DATA.bslot.filter(r=>!q||(g(r,'Slot').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)));
+  renderTable('bslot-wrap',rows,BSLOT_COLS,['Link'],null,null,null);
+}
+
+async function loadBOrders(){
+  const w='bord-wrap';
+  try{
+    DATA.bord=await fetchCSV(BORD_CSV);
+    setStatus('bord-dot','bord-status','bord-updated',true,'Live — '+DATA.bord.length+' records');
+    renderBOrders();
+  }catch(e){setStatus('bord-dot','bord-status','bord-updated',false,'Error');document.getElementById(w).innerHTML='<div class="error">'+e.message+'</div>';}
+}
+function renderBOrders(){
+  const q=(document.getElementById('bord-search').value||'').toLowerCase();
+  const rows=DATA.bord.filter(r=>!q||(g(r,'Order ID').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)));
+  renderTable('bord-wrap',rows,BORD_COLS,null,null,null,null);
+}
+
+async function loadBRefunds(){
+  const w='bref-wrap';
+  try{
+    DATA.bref=await fetchCSV(BREF_CSV);
+    setStatus('bref-dot','bref-status','bref-updated',true,'Live — '+DATA.bref.length+' records');
+    renderBRefunds();
+  }catch(e){setStatus('bref-dot','bref-status','bref-updated',false,'Error');document.getElementById(w).innerHTML='<div class="error">'+e.message+'</div>';}
+}
+function renderBRefunds(){
+  const q=(document.getElementById('bref-search').value||'').toLowerCase();
+  const rows=DATA.bref.filter(r=>!q||(g(r,'Order ID').toLowerCase().includes(q)||g(r,'Product Code').toLowerCase().includes(q)));
+  renderTable('bref-wrap',rows,BREF_COLS,null,['payment status'],null,null);
+}
+
+// =============================================================
+// YOUTUBE
+// =============================================================
+function extractYtId(url){
+  if(!url)return null;
+  let m;
+  m=url.match(/[?&]v=([^&#]+)/);       if(m)return m[1];
+  m=url.match(/youtu\.be\/([^?&#]+)/); if(m)return m[1];
+  m=url.match(/shorts\/([^?&#]+)/);    if(m)return m[1];
+  return null;
+}
+
+function isVisible(row){
+  const s=(g(row,'Status')||'').toLowerCase().trim();
+  if(['inactive','hide','no'].includes(s))return false;
+  return true;
+}
+
+async function loadYoutube(){
+  const grid=document.getElementById('yt-grid');
+  try{
+    DATA.yt=await fetchCSV(YOUTUBE_CSV_URL);
+    setStatus('yt-dot','yt-status','yt-updated',true,'Live — '+DATA.yt.length+' entries');
+    // Populate categories
+    const cats=[...new Set(DATA.yt.filter(isVisible).map(r=>g(r,'Category')).filter(Boolean))].sort();
+    const sel=document.getElementById('yt-cat');
+    const curVal=sel.value;
+    sel.innerHTML='<option value="">All Categories</option>'+cats.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+    sel.value=cats.includes(curVal)?curVal:'';
+    renderYoutube();
   }catch(e){
-    setStatus('orders', false, 'Error loading data');
-    wrap.innerHTML = '<div class="error">Failed to load order data: '+e.message+'</div>';
+    setStatus('yt-dot','yt-status','yt-updated',false,'Error');
+    grid.innerHTML='<div class="error">'+e.message+'</div>';
   }
 }
-function renderOrders(){
-  const wrap = document.getElementById('orders-table-wrap');
-  const q = (document.getElementById('orders-search').value || '').toLowerCase();
-  const rows = DATA.orders.filter(r=>{
-    if(!q) return true;
-    return (getCol(r,'Order id').toLowerCase().includes(q) ||
-            getCol(r,'Product ID').toLowerCase().includes(q));
+function renderYoutube(){
+  const grid=document.getElementById('yt-grid');
+  const q=(document.getElementById('yt-search').value||'').toLowerCase();
+  const cat=document.getElementById('yt-cat').value;
+  const rows=DATA.yt.filter(r=>{
+    if(!isVisible(r))return false;
+    if(q&&!g(r,'Title').toLowerCase().includes(q))return false;
+    if(cat&&g(r,'Category')!==cat)return false;
+    return true;
   });
-  if(!rows.length){ wrap.innerHTML = '<div class="empty">No matching records.</div>'; return; }
-  let html = '<table><thead><tr>' + ORDER_COLS.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+  document.getElementById('yt-count').textContent='Showing '+rows.length+' video'+(rows.length!==1?'s':'');
+  if(!rows.length){grid.innerHTML='<div class="empty">No videos found.</div>';return;}
+  let html='<div class="yt-grid">';
   rows.forEach(r=>{
-    html += '<tr>' + ORDER_COLS.map(c=>'<td>'+(getCol(r,c)||'')+'</td>').join('') + '</tr>';
+    const title=g(r,'Title')||'Untitled';
+    const url=g(r,'YouTube Link')||'';
+    const cat=g(r,'Category')||'';
+    const date=g(r,'Added Date')||'';
+    const ytId=extractYtId(url);
+    const embedUrl=ytId?'https://www.youtube.com/embed/'+ytId+'?rel=0':'';
+    html+='<div class="yt-card">';
+    if(embedUrl){
+      html+='<iframe class="yt-embed" src="'+embedUrl+'" allowfullscreen loading="lazy"></iframe>';
+    }else{
+      html+='<div class="yt-invalid">⚠ Invalid YouTube link</div>';
+    }
+    html+='<div class="yt-info">';
+    html+='<div class="yt-title">'+title+'</div>';
+    html+='<div class="yt-meta">';
+    if(cat)html+='<span class="yt-cat">'+cat+'</span>';
+    if(date)html+='<span class="yt-date">'+date+'</span>';
+    html+='</div>';
+    if(url)html+='<a class="yt-open" href="'+url+'" target="_blank">▶ Open on YouTube</a>';
+    html+='</div></div>';
   });
-  html += '</tbody></table>';
-  wrap.innerHTML = html;
+  html+='</div>';
+  grid.innerHTML=html;
 }
 
-// ---------- REFUNDS ----------
-async function loadRefunds(){
-  const wrap = document.getElementById('refunds-table-wrap');
-  try{
-    DATA.refunds = await fetchCSV(REFUND_FORM_CSV_URL);
-    setStatus('refunds', true, 'Live — ' + DATA.refunds.length + ' records');
-    renderRefunds();
-  }catch(e){
-    setStatus('refunds', false, 'Error loading data');
-    wrap.innerHTML = '<div class="error">Failed to load refund data: '+e.message+'</div>';
-  }
-}
-function renderRefunds(){
-  const wrap = document.getElementById('refunds-table-wrap');
-  const q = (document.getElementById('refunds-search').value || '').toLowerCase();
-  const rows = DATA.refunds.filter(r=>{
-    if(!q) return true;
-    return (getCol(r,'ORDER ID').toLowerCase().includes(q) ||
-            getCol(r,'Order Code').toLowerCase().includes(q));
-  });
-  if(!rows.length){ wrap.innerHTML = '<div class="empty">No matching records.</div>'; return; }
-  let html = '<table><thead><tr>' + REFUND_COLS.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
-  rows.forEach(r=>{
-    html += '<tr>';
-    REFUND_COLS.forEach(c=>{
-      let cell;
-      if(c === 'Payment') cell = paymentBadge(getCol(r,c));
-      else if(c === 'Checked List') cell = checkedBadge(getCol(r,c));
-      else if(c === 'Order and refund Price same or not') cell = matchBadge(getCol(r,c));
-      else cell = getCol(r,c) || '';
-      html += '<td>'+cell+'</td>';
-    });
-    html += '</tr>';
-  });
-  html += '</tbody></table>';
-  wrap.innerHTML = html;
-}
-
-// ---------- GUIDELINES ----------
+// =============================================================
+// GUIDELINES
+// =============================================================
 function refreshGuidelines(){
-  const frame = document.getElementById('guideline-frame');
-  const src = frame.src.split('#')[0];
-  frame.src = src + '#' + Date.now();
+  const f=document.getElementById('guideline-frame');
+  f.src=f.src.split('#')[0]+'#'+Date.now();
 }
 
-// ---------- TABS ----------
-document.querySelectorAll('nav.tabs button').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+// =============================================================
+// TAB SWITCHING
+// =============================================================
+document.querySelectorAll('.nav-btn[data-tab]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-btn[data-tab]').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(btn.dataset.tab).classList.add('active');
   });
 });
 
-// ---------- SEARCH LISTENERS ----------
-document.getElementById('slots-search').addEventListener('input', renderSlots);
-document.getElementById('orders-search').addEventListener('input', renderOrders);
-document.getElementById('refunds-search').addEventListener('input', renderRefunds);
+// =============================================================
+// SEARCH LISTENERS
+// =============================================================
+document.getElementById('aslot-search').addEventListener('input',renderASlot);
+document.getElementById('aord-search').addEventListener('input',renderAOrders);
+document.getElementById('aref-search').addEventListener('input',renderARefunds);
+document.getElementById('bslot-search').addEventListener('input',renderBSlot);
+document.getElementById('bord-search').addEventListener('input',renderBOrders);
+document.getElementById('bref-search').addEventListener('input',renderBRefunds);
+document.getElementById('yt-search').addEventListener('input',renderYoutube);
+document.getElementById('yt-cat').addEventListener('change',renderYoutube);
 
-// ---------- INIT ----------
+// =============================================================
+// INIT + AUTO-REFRESH
+// =============================================================
 function loadAll(){
-  loadSlots();
-  loadOrders();
-  loadRefunds();
+  loadASlot();
+  loadAOrders();
+  loadARefunds();
+  loadBSlot();
+  loadBOrders();
+  loadBRefunds();
+  loadYoutube();
 }
 loadAll();
-setInterval(loadAll, 60000);
+setInterval(loadAll,60000);
 </script>
-
 </body>
 </html>
