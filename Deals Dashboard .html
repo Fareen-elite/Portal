@@ -26,12 +26,6 @@
   --sh:0 1px 3px rgba(16,24,40,.06),0 1px 2px rgba(16,24,40,.04);
   --sh-md:0 4px 20px rgba(16,24,40,.10);
 }
-.quick-links{display:flex;gap:10px;flex-wrap:wrap;padding:14px 16px;max-width:1440px;margin:0 auto;}
-.ql-btn{flex:1;min-width:180px;text-align:center;padding:12px 14px;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;transition:.15s;}
-.ql-btn.amz{background:#eef0fe;color:#4f46e5;border:1.5px solid #c7cbfb;}
-.ql-btn.amz:hover{background:#4f46e5;color:#fff;}
-.ql-btn.bli{background:#fff7ed;color:#ea580c;border:1.5px solid #fed7aa;}
-.ql-btn.bli:hover{background:#ea580c;color:#fff;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
 
@@ -162,6 +156,13 @@ footer a:hover{text-decoration:underline;}
   main{padding:16px;}
   .card{padding:16px;}
 }
+.quick-links{display:flex;gap:10px;flex-wrap:wrap;padding:14px 16px;max-width:1440px;margin:0 auto;}
+.ql-btn{flex:1;min-width:180px;text-align:center;padding:12px 14px;border-radius:10px;font-weight:700;font-size:13px;text-decoration:none;transition:.15s;}
+.ql-btn.amz{background:#eef0fe;color:#4f46e5;border:1.5px solid #c7cbfb;}
+.ql-btn.amz:hover{background:#4f46e5;color:#fff;}
+.ql-btn.bli{background:#fff7ed;color:#ea580c;border:1.5px solid #fed7aa;}
+.ql-btn.bli:hover{background:#ea580c;color:#fff;}
+  
 </style>
 </head>
 <body>
@@ -200,14 +201,14 @@ footer a:hover{text-decoration:underline;}
     </div>
   </div>
 </div>
-
-<main>
 <div class="quick-links">
   <a class="ql-btn amz" href="https://forms.gle/iNXFwuCo7AEk3gfW8" target="_blank">📦 Amazon Order Form</a>
   <a class="ql-btn amz" href="https://forms.gle/Ky7yMB2CdwEwnV5i8" target="_blank">↩️ Amazon Refund Form</a>
   <a class="ql-btn bli" href="https://forms.gle/wxuXLmAvec9PxHBr9" target="_blank">📦 Blinkit Order Form</a>
   <a class="ql-btn bli" href="https://forms.gle/WC5hKLVxb7PsaxKZ8" target="_blank">↩️ Blinkit Refund Form</a>
 </div>
+<main>
+
 <!-- ============================== AMAZON SLOT ============================== -->
 <section id="a-slot" class="active">
   <div class="card">
@@ -343,6 +344,7 @@ footer a:hover{text-decoration:underline;}
   </div>
 </section>
 
+
 <!-- ============================== GUIDELINES ============================== -->
 <section id="guidelines">
   <div class="card">
@@ -391,9 +393,9 @@ const YOUTUBE_CSV_URL = csvUrl(YT_ID, YT_GID);
 // Column maps — edit these to change visible columns
 const ASLOT_COLS  = ["Slot","Product Code","Review Slot","Rating Slot","Link"];
 const AORD_COLS   = ["Timestamp","Name","Order id","Delivery Date","Product ID","Days Delivered"];
-const AREF_COLS   = ["Timestamp","Name","ORDER ID","Order Code","Payment Date","Payment","Return Window","Order and refund Price same or not","Checked List"];
+const AREF_COLS   = ["Timestamp","Reviewer Name","ORDER ID","Order Code","Payment Date","Payment","Return Window","Order and refund Price same or not","Checked List"];
 const BORD_COLS   = ["Timestamp","Name","Order ID","Delivery Date","Product Code","Location"];
-const BREF_COLS   = ["Timestamp","Name","Order ID","Delivery Date","Product Code","Payment date","Return Window","payment status"];
+const BREF_COLS   = ["Timestamp","Reviewer Name","Order ID","Delivery Date","Product Code","Payment date","Return Window","payment status"];
 const BSLOT_COLS  = ["Slot","Product Code","LOC","Review Slot","Rating Slot","Link"];
 
 // =============================================================
